@@ -1,0 +1,9 @@
+The overall design of the receiver consists of two types of components:
+protocols and sinks.
+
+For each supported protocol there is some server code that accepts packets
+and forwards them to a sink. Packets are forwarded exactly as they come in.
+They are still signed and encrypted. Authentication and encryption may
+handled by the other end of the sinks.
+
+A sink is an output range.

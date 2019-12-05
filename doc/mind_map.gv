@@ -1,0 +1,87 @@
+# We are definitely going to implement this.
+m4_define(defn, `$1 [ label = m4_ifelse(`$2', `', `$1', `$2'), style = filled ]')
+
+# We may implement this at some point.
+m4_define(idea, `$1 [ label = m4_ifelse(`$2', `', `$1', `$2'), style = "" ]')
+
+graph
+{
+    graph [ overlap = false, outputorder = edgesfirst ]
+    node [ penwidth = 5, shape = circle, fontname = "Liberation Sans" ]
+    edge [ penwidth = 5 ]
+
+    subgraph {
+        node [ color = powderblue ]
+        edge [ color = powderblue ]
+        defn(Collect)
+            idea(Filter)
+                idea(NaN)
+                idea(FilterRegex, Regex)
+                Filter -- { FilterRegex NaN }
+            defn(Formats)
+                defn(Structured)
+                idea(Unstructured)
+                    idea(Extract)
+                        idea(ExtractRegex, Regex)
+                        Extract -- { ExtractRegex }
+                    Unstructured -- { Extract }
+                Formats -- { Structured Unstructured }
+            defn(Security)
+                idea("Rate limit")
+                defn(libsodium)
+                    defn(Decrypt)
+                    defn(Verify)
+                    libsodium -- { Decrypt Verify }
+                Security -- { "Rate limit" libsodium }
+            defn(Store)
+                idea(PostgreSQL)
+                Store -- { PostgreSQL }
+            Collect -- { Filter Formats Security Store }
+    }
+
+    subgraph {
+        node [ color = orange ]
+        edge [ color = orange ]
+        defn(Receive)
+            defn(Protocols)
+                idea(HTTP)
+                defn(TCP)
+                    defn("Length prefix")
+                    TCP -- { "Length prefix" }
+                idea(UDP)
+                Protocols -- { HTTP TCP UDP }
+            Receive -- { Protocols }
+    }
+
+    subgraph {
+        node [ color = lightcoral ]
+        edge [ color = lightcoral ]
+        defn(Report)
+            idea(Aggregate)
+                idea(Chart)
+                idea(Table)
+                Aggregate -- { Chart Table }
+            idea(Search)
+                idea(SearchRegex, Regex)
+                Search -- { SearchRegex }
+            defn(Stream)
+                defn(Acoustic)
+                    defn(Amplitude)
+                    defn(Frequency)
+                    Acoustic -- { Amplitude Frequency }
+                idea(Textual)
+                idea(Visual)
+                    idea("Hilbert curve")
+                    Visual -- { "Hilbert curve" }
+                Stream -- { Acoustic Textual Visual }
+            Report -- { Aggregate Search Stream }
+    }
+
+    subgraph {
+        node [ color = plum ]
+        edge [ color = plum ]
+        defn(Sitrep)
+            defn(ØMQ)
+            Sitrep -- { Collect Receive Report ØMQ }
+    }
+}
